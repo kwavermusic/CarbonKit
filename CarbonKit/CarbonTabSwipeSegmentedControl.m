@@ -32,62 +32,70 @@
 - (instancetype)initWithItems:(NSArray *)items {
     self = [super initWithItems:items];
     if (self) {
-
+        
         self.indicatorHeight = 3;
         self.selectedSegmentIndex = 0;
         self.apportionsSegmentWidthsByContent = YES;
-
+        
         // Create indicator
         self.indicator = [UIImageView new];
         self.indicator.backgroundColor = self.tintColor;
-        self.indicator.autoresizingMask = UIViewAutoresizingNone;
+        self.indicator.clipsToBounds = true;
+        self.indicator.layer.cornerRadius = 1.5;
         [self addSubview:self.indicator];
-
+        
+        gradient = [CAGradientLayer layer];
+        gradient.frame = CGRectMake(0, 0, 80, 3);
+        gradient.startPoint = CGPointMake(0, 0);
+        gradient.endPoint = CGPointMake(1, 0);
+        gradient.colors = @[(id)[UIColor colorWithRed:11.0/255.0f green:228.0/255.0f blue:125.0/255.0f alpha:1.0f].CGColor, (id)[UIColor colorWithRed:0.0/255.0f green:186.0/255.0f blue:177.0/255.0f alpha:1.0f].CGColor];
+        [self.indicator.layer insertSublayer:gradient atIndex:0];
+        
         // Support RTL
         if ([UIApplication sharedApplication].userInterfaceLayoutDirection ==
-                UIUserInterfaceLayoutDirectionRightToLeft &&
+            UIUserInterfaceLayoutDirectionRightToLeft &&
             [self respondsToSelector:@selector(semanticContentAttribute)]) {
             self.semanticContentAttribute = UISemanticContentAttributeForceRightToLeft;
             self.indicator.semanticContentAttribute = UISemanticContentAttributeForceRightToLeft;
         }
-
+        
         // Custimize segmented control
         id titleAttr = @{
-            NSForegroundColorAttributeName : [self.tintColor colorWithAlphaComponent:0.8],
-            NSFontAttributeName : [UIFont boldSystemFontOfSize:14]
-        };
+                         NSForegroundColorAttributeName : [self.tintColor colorWithAlphaComponent:0.8],
+                         NSFontAttributeName : [UIFont boldSystemFontOfSize:14]
+                         };
         [self setTitleTextAttributes:titleAttr forState:UIControlStateNormal];
-
+        
         id selectedTittleAttr = @{
-            NSForegroundColorAttributeName : self.tintColor,
-            NSFontAttributeName : [UIFont boldSystemFontOfSize:14]
-        };
+                                  NSForegroundColorAttributeName : self.tintColor,
+                                  NSFontAttributeName : [UIFont boldSystemFontOfSize:14]
+                                  };
         [self setTitleTextAttributes:selectedTittleAttr forState:UIControlStateSelected];
-
+        
         // Disable tint color and divider image
         [self setTintColor:[UIColor clearColor]];
         [self setDividerImage:[UIImage new]
-            forLeftSegmentState:UIControlStateNormal
-              rightSegmentState:UIControlStateNormal
-                     barMetrics:UIBarMetricsDefault];
-
+          forLeftSegmentState:UIControlStateNormal
+            rightSegmentState:UIControlStateNormal
+                   barMetrics:UIBarMetricsDefault];
+        
         // Fix indicator frame
         if (items) {
             self.indicatorMinX = [self getMinXForSegmentAtIndex:self.selectedSegmentIndex];
             self.indicatorWidth = [self getWidthForSegmentAtIndex:self.selectedSegmentIndex];
             [self updateIndicatorWithAnimation:NO];
         }
-
+        
         [self addTarget:self
-                      action:@selector(segmentedTapped:)
-            forControlEvents:UIControlEventValueChanged];
+                 action:@selector(segmentedTapped:)
+       forControlEvents:UIControlEventValueChanged];
     }
     return self;
 }
 
 - (void)drawRect:(CGRect)rect {
     [super drawRect:rect];
-
+    
     // Add extra width to each segment and calculate the segment width
     CGFloat totalWidth = 0;
     for (UIView *segment in self.segments) {
@@ -99,21 +107,24 @@
         segment.frame = segmentRect;
         totalWidth += segmentRect.size.width;
     }
-
+    
     _tabExtraWidth = 0;
-
+    
     // Set the width of UISegmentedControl to fit all segments
     rect.size.width = totalWidth;
     self.frame = rect;
-
+    
     // Change images tint
     [self syncImageTintColor];
-
+    
     // Sync indicator
     dispatch_async(dispatch_get_main_queue(), ^{
         self.indicatorMinX = [self getMinXForSegmentAtIndex:self.selectedSegmentIndex];
         self.indicatorWidth = [self getWidthForSegmentAtIndex:self.selectedSegmentIndex];
-        [self updateIndicatorWithAnimation:NO];
+        [self updateIndicatorWithAnimation:YES];
+        
+        
+        
     });
 }
 
@@ -125,13 +136,13 @@
 
 - (void)setTabExtraWidth:(CGFloat)tabExtraWidth {
     _tabExtraWidth = tabExtraWidth;
-
+    
     [self setNeedsDisplay];
 }
 
 - (void)setTitleTextAttributes:(NSDictionary *)attributes forState:(UIControlState)state {
     [super setTitleTextAttributes:attributes forState:state];
-
+    
     if (state == UIControlStateNormal) {
         [self setImageNormalColor:attributes[NSForegroundColorAttributeName]];
     } else if (state == UIControlStateSelected) {
@@ -204,11 +215,11 @@
 
 - (void)updateIndicatorWithAnimation:(BOOL)animation {
     CGFloat indicatorY = 0;
-
+    
     if (self.indicatorPosition == IndicatorPositionBottom) {
         indicatorY = CGRectGetHeight(self.frame) - self.indicatorHeight;
     }
-
+    
     [UIView animateWithDuration:animation ? 0.3 : 0
                      animations:^{
                          CGRect rect = self.indicator.frame;
@@ -217,6 +228,7 @@
                          rect.size.width = self.indicatorWidth;
                          rect.size.height = self.indicatorHeight;
                          self.indicator.frame = rect;
+                         gradient.frame = CGRectMake(0,0,rect.size.width,3);
                      }];
 }
 

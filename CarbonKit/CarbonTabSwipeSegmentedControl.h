@@ -37,7 +37,10 @@ typedef NS_ENUM(NSUInteger, IndicatorHorizontalPositionFocus) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CarbonTabSwipeSegmentedControl : UISegmentedControl
+@interface CarbonTabSwipeSegmentedControl : UISegmentedControl {
+    
+    CAGradientLayer *gradient;
+}
 
 @property(nonatomic) CGFloat indicatorHeight;
 @property(nonatomic) CGFloat indicatorMinX;
@@ -49,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) UIColor *imageSelectedColor;
 @property(nonatomic, strong, nonnull) UIImageView *indicator;
 @property(nonatomic, weak, readonly) NSArray<UIView *> *segments;
+
 
 - (instancetype)initWithItems:(nullable NSArray *)items;
 
