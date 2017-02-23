@@ -220,6 +220,8 @@
         indicatorY = CGRectGetHeight(self.frame) - self.indicatorHeight;
     }
     
+    gradient.frame = CGRectMake(0,0,self.indicatorWidth,3);
+    
     [UIView animateWithDuration:animation ? 0.3 : 0
                      animations:^{
                          CGRect rect = self.indicator.frame;
@@ -228,7 +230,7 @@
                          rect.size.width = self.indicatorWidth;
                          rect.size.height = self.indicatorHeight;
                          self.indicator.frame = rect;
-                         gradient.frame = CGRectMake(0,0,rect.size.width,3);
+                         
                      }];
 }
 
