@@ -37,6 +37,8 @@
         self.selectedSegmentIndex = 0;
         self.apportionsSegmentWidthsByContent = YES;
         
+        
+        
         // Create indicator
         self.indicator = [UIImageView new];
         self.indicator.backgroundColor = self.tintColor;
@@ -45,7 +47,8 @@
         [self addSubview:self.indicator];
         
         gradient = [CAGradientLayer layer];
-        gradient.frame = CGRectMake(0, 0, 80, 3);
+        
+        gradient.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width * 0.5, 3);
         gradient.startPoint = CGPointMake(0, 0);
         gradient.endPoint = CGPointMake(1, 0);
         gradient.colors = @[(id)[UIColor colorWithRed:11.0/255.0f green:228.0/255.0f blue:125.0/255.0f alpha:1.0f].CGColor, (id)[UIColor colorWithRed:0.0/255.0f green:186.0/255.0f blue:177.0/255.0f alpha:1.0f].CGColor];
@@ -219,8 +222,6 @@
     if (self.indicatorPosition == IndicatorPositionBottom) {
         indicatorY = CGRectGetHeight(self.frame) - self.indicatorHeight;
     }
-    
-    gradient.frame = CGRectMake(0,0,self.indicatorWidth,3);
     
     [UIView animateWithDuration:animation ? 0.3 : 0
                      animations:^{
